@@ -1,4 +1,7 @@
+.DS_Store
 .fake/
 paket-files
 bin
 obj
+packages
+download

@@ -1,3 +1,8 @@
+source https://www.nuget.org/api/v2
+
+nuget Http.fs
+nuget System.Security.AccessControl
+
 // [ FAKE GROUP ]
 group Build
     storage none
