@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="crawler.hocon" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="crawler.hocon">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Feblr.Crawler.Core\Feblr.Crawler.Core.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Config.fs" />
+    <Compile Include="Downloader.fs" />
+    <Compile Include="Coordinator.fs" />
+    <Compile Include="Extractor.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

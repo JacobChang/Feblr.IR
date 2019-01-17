@@ -1,7 +1,4 @@
-source https://www.nuget.org/api/v2
-
-nuget Http.fs
-nuget System.Security.AccessControl
+version 5.193.0
 
 // [ FAKE GROUP ]
 group Build
@@ -10,3 +7,22 @@ group Build
     nuget Fake.DotNet.Cli
     nuget Fake.IO.FileSystem
     nuget Fake.Core.Target
+
+group Main
+    storage none
+    source https://api.nuget.org/v3/index.json
+    nuget FSharp.Core
+    nuget Akka
+    nuget Akka.FSharp
+    nuget Akka.Cluster
+    nuget Akka.Streams
+    nuget Akka.Persistence
+    nuget Giraffe
+    nuget Http.fs
+    nuget System.Security.AccessControl
+
+group Tests
+    storage none
+    source https://api.nuget.org/v3/index.json
+    nuget FSharp.Core
+    nuget Akka.TestKit
