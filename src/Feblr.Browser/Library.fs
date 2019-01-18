@@ -7,7 +7,7 @@ open System.Diagnostics
 module Downloader =
     open System.IO.Compression
     open System.Runtime.InteropServices
-    open System.Security.AccessControl
+    open Mono.Unix.Native
     open Hopac
     open HttpFs.Client
 
@@ -37,15 +37,13 @@ module Downloader =
         { revision: int
           platform: Platform
           downloadHost: string
-          downloadFolder: string
-          outputFolder: string }
+          downloadFolder: string }
 
     let defaultDownloadOptioon =
         { revision = defaultRevision
           platform = platform
           downloadHost = defaultDownloadHost
-          downloadFolder = "."
-          outputFolder = "." }
+          downloadFolder = "." }
 
     let downloadURL (option: DownloadOption) =
         match option.platform with
@@ -57,6 +55,16 @@ module Downloader =
             sprintf "%s/chromium-browser-snapshots/Win/%d/chrome-win.zip" option.downloadHost option.revision
         | Windows64 ->
             sprintf "%s/chromium-browser-snapshots/Win_x64/%d/chrome-win.zip" option.downloadHost option.revision
+
+    let getExecPath (option: DownloadOption) =
+        match option.platform with
+        | Linux ->
+            sprintf "%s/chrome-linux/chrome" option.downloadFolder
+        | OSX ->
+            sprintf "%s/chrome-mac/Chromium.app/Contents/MacOS/Chromium" option.downloadFolder
+        | Windows32
+        | Windows64 ->
+            sprintf "%s/chrome-win/chrome.exe" option.downloadFolder
 
     let download (option: DownloadOption) = job {
         printfn "create download directory"
@@ -72,8 +80,21 @@ module Downloader =
         printfn "downloaded chromium"
 
         printfn "start to unzip file"
-        ZipFile.ExtractToDirectory (zipFilePath, option.outputFolder)
+        if option.platform = Platform.OSX then
+            let process = new Process();
+            process.StartInfo.FileName <- "unzip";
+            process.StartInfo.Arguments <- (sprintf "%s -d %s" zipFilePath option.downloadFolder)
+            process.Start()
+            process.WaitForExit()
+        else
+            ZipFile.ExtractToDirectory (zipFilePath, option.downloadFolder)
         printfn "finish unzip file"
+
+        if option.platform = Platform.Linux then
+            let execPath = getExecPath option
+            let permissions =
+                FilePermissions.S_IRWXU ||| FilePermissions.S_IRGRP ||| FilePermissions.S_IXGRP ||| FilePermissions.S_IROTH ||| FilePermissions.S_IXOTH
+            Syscall.chmod (execPath, permissions)
     }
 
 module DevToolsProtocol =
@@ -119,13 +140,13 @@ module DevToolsProtocol =
             option.arguments
             |> List.append defaultArgs
             |> List.append [userDataDirArg; debugPortArg]
-        
+            |> String.concat " "
+
         let startInfo = new ProcessStartInfo()
         startInfo.FileName <- option.execPath
+        startInfo.Arguments <- arguments
         startInfo.UseShellExecute <- false
         let proc = new Process()
         proc.StartInfo <- startInfo
         proc.Start()
         proc.WaitForExit()
-
-        ignore

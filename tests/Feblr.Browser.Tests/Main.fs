@@ -10,18 +10,20 @@ open System.IO
 
 [<EntryPoint>]
 let main argv =
-    let outputFolder = Path.Combine(Environment.CurrentDirectory, "download", Downloader.defaultDownloadOptioon.revision.ToString())
-    if File.Exists (Path.Combine (outputFolder, "chromium.zip")) then
+    let downloadFolder = Path.Combine(Environment.CurrentDirectory, "download", Downloader.defaultDownloadOptioon.revision.ToString())
+    let options =
+        { Downloader.defaultDownloadOptioon with platform = Downloader.Platform.OSX; downloadFolder = downloadFolder; }
+
+    if File.Exists (Path.Combine (downloadFolder, "chromium.zip")) then
         printfn "file exist"
     else
-        let options = 
-            { Downloader.defaultDownloadOptioon with platform = Downloader.Platform.OSX; downloadFolder = outputFolder; outputFolder = outputFolder }
         Downloader.download options
         |> run
         |> (fun _ -> printfn "downloaed chromium brower")
 
-    let execPath =
-        Path.Combine (outputFolder, "chrome-mac/Chromium.app/Contents/MacOS/Chromium")
+    let execPath = Downloader.getExecPath options
+
+    printfn "%s" execPath
 
     let launchOption =
         { execPath = execPath
