@@ -14,6 +14,7 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Browser", "src\Feblr.Browser\Feblr.Browser.fsproj", "{D890CC7C-B06A-4AFD-BAAA-EB15E511CB5F}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Browser.Tests", "tests\Feblr.Browser.Tests\Feblr.Browser.Tests.fsproj", "{59FF2083-9797-4329-A3B9-5A902CC9BAA9}"
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Crawler.Core", "src\Feblr.Crawler.Core\Feblr.Crawler.Core.fsproj", "{120C7647-5960-4C1C-A7DF-8B1D6F437A8C}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Crawler.Core.Tests", "tests\Feblr.Crawler.Core.Tests\Feblr.Crawler.Core.Tests.fsproj", "{D26AFEF4-2D71-487D-BFBF-5A60A8D0A417}"
