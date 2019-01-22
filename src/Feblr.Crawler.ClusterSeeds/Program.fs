@@ -6,15 +6,12 @@ open Akka
 open Akka.Configuration
 open Akka.Actor
 
-let parse (path: string): Config =
-    let configFile = Path.Combine (Environment.CurrentDirectory, path)
-    let content = File.ReadAllText(configFile);
-    ConfigurationFactory.ParseString(content)
+open Feblr.Crawler.Core
 
 
 [<EntryPoint>]
 let main argv =
-    let config = parse "./src/Feblr.Crawler.ClusterSeeds/cluster.hocon"
+    let config = Config.parse "./src/Feblr.Crawler.ClusterSeeds/cluster.hocon"
     let actorSystem = ActorSystem.Create ("crawler", config)
 
     let stopCrawler (sender: obj) (evt: ConsoleCancelEventArgs) =

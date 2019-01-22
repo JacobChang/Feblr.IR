@@ -81,11 +81,11 @@ module Downloader =
 
         printfn "start to unzip file"
         if option.platform = Platform.OSX then
-            let process = new Process();
-            process.StartInfo.FileName <- "unzip";
-            process.StartInfo.Arguments <- (sprintf "%s -d %s" zipFilePath option.downloadFolder)
-            process.Start()
-            process.WaitForExit()
+            let proc = new Process();
+            proc.StartInfo.FileName <- "unzip";
+            proc.StartInfo.Arguments <- (sprintf "%s -d %s" zipFilePath option.downloadFolder)
+            proc.Start() |> ignore
+            proc.WaitForExit()
         else
             ZipFile.ExtractToDirectory (zipFilePath, option.downloadFolder)
         printfn "finish unzip file"
@@ -94,7 +94,7 @@ module Downloader =
             let execPath = getExecPath option
             let permissions =
                 FilePermissions.S_IRWXU ||| FilePermissions.S_IRGRP ||| FilePermissions.S_IXGRP ||| FilePermissions.S_IROTH ||| FilePermissions.S_IXOTH
-            Syscall.chmod (execPath, permissions)
+            Syscall.chmod (execPath, permissions) |> ignore
     }
 
 module DevToolsProtocol =
@@ -148,5 +148,5 @@ module DevToolsProtocol =
         startInfo.UseShellExecute <- false
         let proc = new Process()
         proc.StartInfo <- startInfo
-        proc.Start()
+        proc.Start() |> ignore
         proc.WaitForExit()

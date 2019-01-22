@@ -1,9 +1,9 @@
-﻿namespace Feblr.Crawler
+﻿namespace Feblr.Crawler.Core
 
 open Akka.Actor
 open Akka.Configuration
 
-module Core =
+module Engine =
     type CrawlerSystem =
         { actorSystem: ActorSystem }
 

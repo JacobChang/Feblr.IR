@@ -18,10 +18,6 @@
     <ProjectReference Include="..\Feblr.Crawler.Core\Feblr.Crawler.Core.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config.fs" />
-    <Compile Include="Downloader.fs" />
-    <Compile Include="Coordinator.fs" />
-    <Compile Include="Extractor.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

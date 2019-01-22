@@ -1,4 +1,4 @@
-namespace Feblr.Crawler
+namespace Feblr.Crawler.Core
 
 open System.IO
 open Akka.Configuration

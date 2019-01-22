@@ -1,4 +1,4 @@
-namespace Feblr.Crawler
+namespace Feblr.Crawler.Core
 
 open Akka.FSharp
 

@@ -10,15 +10,15 @@ module Main =
     let main argv =
         let configFile = Path.Combine (Environment.CurrentDirectory, "./src/Feblr.Crawler/crawler.hocon")
         let config = Config.parse configFile
-        let crawler = Core.start "crawler" config
+        let crawler = Engine.start "crawler" config
 
         let stopCrawler (sender: obj) (evt: ConsoleCancelEventArgs) =
-            let stopTask = Core.stop crawler
+            let stopTask = Engine.stop crawler
             stopTask.Wait()
             evt.Cancel <- true
 
         Console.CancelKeyPress.AddHandler (new ConsoleCancelEventHandler(stopCrawler))
 
-        Core.waitForTerminated crawler
+        Engine.waitForTerminated crawler
 
         0 // return an integer exit code
