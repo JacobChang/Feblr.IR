@@ -19,6 +19,7 @@ group Main
     nuget Akka.Persistence
     nuget Giraffe
     nuget Http.fs
+    nuget Thoth.Json.Net
     nuget Mono.Posix.NetStandard
 
 group Tests

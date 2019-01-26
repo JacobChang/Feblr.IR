@@ -1,3 +1,4 @@
 group Main
     Http.fs
     Mono.Posix.NetStandard
+    Thoth.Json.Net

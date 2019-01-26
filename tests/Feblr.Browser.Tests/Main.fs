@@ -25,10 +25,20 @@ let main argv =
 
     printfn "%s" execPath
 
-    let launchOption =
-        { execPath = execPath
-          arguments = [] }
+    async {
+        let launchOption =
+            { execPath = execPath
+              arguments = []
+              debugPort = 9222 }
 
-    let browser = DevToolsProtocol.launch launchOption
+        let! browser = DevToolsProtocol.launch launchOption
+
+        match browser with
+        | Ok browser ->
+            browser.waitForExit()
+        | Error err ->
+            printfn "%A" err
+    }
+    |> Async.RunSynchronously
 
     0

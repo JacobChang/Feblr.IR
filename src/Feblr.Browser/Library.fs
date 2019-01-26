@@ -3,13 +3,16 @@ namespace Feblr.Browser
 open System
 open System.IO
 open System.Diagnostics
+open System.Net.WebSockets
+open System.Threading
+open Hopac
+open HttpFs.Client
+open Thoth.Json.Net
 
 module Downloader =
     open System.IO.Compression
     open System.Runtime.InteropServices
     open Mono.Unix.Native
-    open Hopac
-    open HttpFs.Client
 
     type Platform =
          | Linux
@@ -100,7 +103,8 @@ module Downloader =
 module DevToolsProtocol =
     type LaunchOption =
         { execPath: string
-          arguments: string list }
+          arguments: string list
+          debugPort: int }
 
     // copied from https://github.com/GoogleChrome/puppeteer/blob/master/lib/Launcher.js#L37
     let defaultArgs = [
@@ -130,11 +134,21 @@ module DevToolsProtocol =
       "--use-mock-keychain"
     ];
 
-    let launch (option: LaunchOption) =
+    type Browser =
+        { proc: Process
+          webSock: WebSocket }
+
+        with
+            member this.waitForExit () =
+                this.proc.WaitForExit()
+
+    type VersionInfo =
+        { webSocketDebuggerUrl: string }
+
+    let launch (option: LaunchOption) = async {
         let userDataDir = Path.Combine (Path.GetTempPath(), "chronium-user-data")
         let userDataDirArg = sprintf "--user-data-dir=%s" userDataDir
-
-        let debugPortArg = sprintf "--remote-debugging-port=0"
+        let debugPortArg = sprintf "--remote-debugging-port=%d" option.debugPort
 
         let arguments =
             option.arguments
@@ -149,4 +163,33 @@ module DevToolsProtocol =
         let proc = new Process()
         proc.StartInfo <- startInfo
         proc.Start() |> ignore
-        proc.WaitForExit()
+
+        Thread.Sleep(1000)
+
+        let versionUriString = sprintf "http://127.0.0.1:%d/json/version" option.debugPort
+        let request =
+            Request.createUrl Get versionUriString
+        let bodyStr =
+            job {
+                use! response = getResponse request
+                let! bodyStr = Response.readBodyAsString response
+
+                return bodyStr
+            }
+            |> run
+        let versionInfoResult = Decode.Auto.fromString<VersionInfo>(bodyStr)
+        match versionInfoResult with
+        | Ok versionInfo ->
+            printfn "%s" versionInfo.webSocketDebuggerUrl
+            let uri = new Uri(versionInfo.webSocketDebuggerUrl)
+            let webSock = new ClientWebSocket()
+            webSock.Options.KeepAliveInterval <- TimeSpan.Zero
+
+            do! webSock.ConnectAsync (uri, CancellationToken.None)
+
+            let browser = { proc = proc; webSock = webSock }
+
+            return (Ok browser)
+        | Error err ->
+            return (Error err)
+    }
