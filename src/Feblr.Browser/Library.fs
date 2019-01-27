@@ -70,9 +70,6 @@ module Downloader =
             sprintf "%s/chrome-win/chrome.exe" option.downloadFolder
 
     let download (option: DownloadOption) = job {
-        printfn "create download directory"
-        let outputDir = Directory.CreateDirectory option.downloadFolder
-
         let url = downloadURL option
         printfn "download chromium from : %s" url
         use! resp = Request.createUrl Get url |> getResponse
@@ -101,10 +98,6 @@ module Downloader =
     }
 
 module DevToolsProtocol =
-    type LaunchOption =
-        { execPath: string
-          arguments: string list
-          debugPort: int }
 
     // copied from https://github.com/GoogleChrome/puppeteer/blob/master/lib/Launcher.js#L37
     let defaultArgs = [
@@ -134,9 +127,13 @@ module DevToolsProtocol =
       "--use-mock-keychain"
     ];
 
+    type Context =
+        { id: int option }
+
     type Browser =
         { proc: Process
-          webSock: WebSocket }
+          webSock: WebSocket
+          contexts: Context list }
 
         with
             member this.waitForExit () =
@@ -144,6 +141,41 @@ module DevToolsProtocol =
 
     type VersionInfo =
         { webSocketDebuggerUrl: string }
+
+    type AttachOption =
+        { debugPort: int }
+
+    let attach (option: AttachOption) = async {
+        let versionUriString = sprintf "http://127.0.0.1:%d/json/version" option.debugPort
+        let request =
+            Request.createUrl Get versionUriString
+        let bodyStr =
+            job {
+                use! response = getResponse request
+                let! bodyStr = Response.readBodyAsString response
+
+                return bodyStr
+            }
+            |> run
+        let versionInfoResult = Decode.Auto.fromString<VersionInfo>(bodyStr)
+        match versionInfoResult with
+        | Ok versionInfo ->
+            printfn "%s" versionInfo.webSocketDebuggerUrl
+            let uri = new Uri(versionInfo.webSocketDebuggerUrl)
+            let webSock = new ClientWebSocket()
+            webSock.Options.KeepAliveInterval <- TimeSpan.Zero
+
+            do! webSock.ConnectAsync (uri, CancellationToken.None)
+
+            return (Ok webSock)
+        | Error err ->
+            return (Error err)
+    }
+
+    type LaunchOption =
+        { execPath: string
+          arguments: string list
+          debugPort: int }
 
     let launch (option: LaunchOption) = async {
         let userDataDir = Path.Combine (Path.GetTempPath(), "chronium-user-data")
@@ -166,30 +198,10 @@ module DevToolsProtocol =
 
         Thread.Sleep(1000)
 
-        let versionUriString = sprintf "http://127.0.0.1:%d/json/version" option.debugPort
-        let request =
-            Request.createUrl Get versionUriString
-        let bodyStr =
-            job {
-                use! response = getResponse request
-                let! bodyStr = Response.readBodyAsString response
-
-                return bodyStr
-            }
-            |> run
-        let versionInfoResult = Decode.Auto.fromString<VersionInfo>(bodyStr)
-        match versionInfoResult with
-        | Ok versionInfo ->
-            printfn "%s" versionInfo.webSocketDebuggerUrl
-            let uri = new Uri(versionInfo.webSocketDebuggerUrl)
-            let webSock = new ClientWebSocket()
-            webSock.Options.KeepAliveInterval <- TimeSpan.Zero
-
-            do! webSock.ConnectAsync (uri, CancellationToken.None)
-
-            let browser = { proc = proc; webSock = webSock }
-
-            return (Ok browser)
+        let! webSock = attach { debugPort = option.debugPort }
+        match webSock with
+        | Ok webSock ->
+            return Ok { proc = proc; webSock = webSock; contexts = [ { id = None }] }
         | Error err ->
-            return (Error err)
+            return Error err
     }
