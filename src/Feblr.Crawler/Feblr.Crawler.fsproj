@@ -8,11 +8,6 @@
   <ItemGroup>
     <None Remove="crawler.hocon" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="crawler.hocon">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Feblr.Crawler.Core\Feblr.Crawler.Core.fsproj" />

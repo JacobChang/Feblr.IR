@@ -1,6 +1,6 @@
 namespace Feblr.Crawler.Core
 
-open Akka.FSharp
-
 module Extractor =
+    let supervisor () = ignore
+
     let extract () = ignore

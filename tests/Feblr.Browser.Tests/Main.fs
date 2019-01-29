@@ -23,8 +23,6 @@ let main argv =
 
     let execPath = Downloader.getExecPath options
 
-    printfn "%s" execPath
-
     async {
         let launchOption =
             { execPath = execPath

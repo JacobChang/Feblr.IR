@@ -1,5 +1,0 @@
-group Main
-    FSharp.Core
-    Akka
-    Akka.FSharp
-    Akka.Cluster

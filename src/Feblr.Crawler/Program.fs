@@ -1,24 +1,18 @@
 ﻿// Learn more about F# at http://fsharp.org
 namespace Feblr.Crawler
 
-open System
-open System.IO
+open System.Net
 open Feblr.Crawler.Core
 
 module Main =
     [<EntryPoint>]
     let main argv =
-        let configFile = Path.Combine (Environment.CurrentDirectory, "./src/Feblr.Crawler/crawler.hocon")
-        let config = Config.parse configFile
-        let crawler = Engine.start "crawler" config
-
-        let stopCrawler (sender: obj) (evt: ConsoleCancelEventArgs) =
-            let stopTask = Engine.stop crawler
-            stopTask.Wait()
-            evt.Cancel <- true
-
-        Console.CancelKeyPress.AddHandler (new ConsoleCancelEventHandler(stopCrawler))
-
-        Engine.waitForTerminated crawler
+        let config: Engine.Config = {
+            clusterId = "localhost-demo"
+            localhostSiloPort = 11111
+            localhostSiloGatewayPort = 30000
+            localhostSiloAddress = IPAddress.Loopback
+        }
+        let crawler = Engine.start config
 
         0 // return an integer exit code

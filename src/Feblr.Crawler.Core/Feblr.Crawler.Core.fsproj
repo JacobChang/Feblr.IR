@@ -3,7 +3,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Config.fs" />
     <Compile Include="Coordinator.fs" />
     <Compile Include="Downloader.fs" />
     <Compile Include="Extractor.fs" />

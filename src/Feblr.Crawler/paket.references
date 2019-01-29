@@ -1,5 +1,4 @@
 group Main
     FSharp.Core
-    Akka
-    Akka.FSharp
     Giraffe
+    Orleankka.Fsharp

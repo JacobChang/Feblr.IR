@@ -1,6 +1,8 @@
 namespace Feblr.Crawler.Core
 
-open Akka.FSharp
+open System
 
 module Coordinator =
-    let downlod () = ignore
+    let supervisor () = ignore
+
+    let downlod (uri: Uri) = ignore

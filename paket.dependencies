@@ -12,11 +12,10 @@ group Main
     storage none
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core
-    nuget Akka
-    nuget Akka.FSharp
-    nuget Akka.Cluster
-    nuget Akka.Streams
-    nuget Akka.Persistence
+    nuget Orleankka
+    nuget Orleankka.Runtime
+    nuget Orleankka.Fsharp
+    nuget Orleankka.Fsharp.Runtime
     nuget Giraffe
     nuget Http.fs
     nuget Thoth.Json.Net
@@ -26,4 +25,4 @@ group Tests
     storage none
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core
-    nuget Akka.TestKit
+    nuget Orleankka.TestKit
