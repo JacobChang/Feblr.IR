@@ -4,11 +4,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="crawler.hocon" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Feblr.Crawler.Core\Feblr.Crawler.Core.fsproj" />
   </ItemGroup>

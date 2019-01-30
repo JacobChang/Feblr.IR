@@ -14,53 +14,47 @@ open Orleankka.Cluster
 open Orleankka.Client
 open Orleankka.FSharp
 
-module Engine =
-    type Job =
-        { uri: Uri
-          depth: int }
+open Feblr.Crawler.Core.Coordinator
 
+module Engine =
     type Config =
         { clusterId: string
-          localhostSiloPort: int
-          localhostSiloGatewayPort: int
-          localhostSiloAddress: IPAddress }
+          serviceId: string
+          siloPort: int
+          siloGatewayPort: int
+          siloAddress: IPAddress }
 
     type CrawlerSystem =
         { actorSystem: IClientActorSystem }
 
-    let start (config: Config) = task {
-        let sb = new SiloHostBuilder()
-        sb.Configure<ClusterOptions>(fun (options:ClusterOptions) -> options.ClusterId <- config.clusterId) |> ignore
-        sb.UseDevelopmentClustering(fun (options:DevelopmentClusterMembershipOptions) -> options.PrimarySiloEndpoint <- IPEndPoint(config.localhostSiloAddress, config.localhostSiloPort)) |> ignore
-        sb.ConfigureEndpoints(config.localhostSiloAddress, config.localhostSiloPort, config.localhostSiloGatewayPort) |> ignore
-
-        // register assembly containing your custom actor grain interfaces
+    let setup (config: Config) =
+        let sb = SiloHostBuilder()
+        sb.Configure<ClusterOptions>(fun (options:ClusterOptions) -> options.ClusterId <- config.clusterId; options.ServiceId <- config.serviceId) |> ignore
+        sb.UseDevelopmentClustering(fun (options:DevelopmentClusterMembershipOptions) -> options.PrimarySiloEndpoint <- IPEndPoint(config.siloAddress, config.siloPort)) |> ignore
+        sb.ConfigureEndpoints(config.siloAddress, config.siloPort, config.siloGatewayPort) |> ignore
         sb.ConfigureApplicationParts(fun x -> x.AddApplicationPart(Assembly.GetExecutingAssembly()).WithCodeGeneration() |> ignore) |> ignore
-
-        // register Orleankka extension
         sb.UseOrleankka() |> ignore
 
-        // configure localhost silo client
-        let cb = new ClientBuilder()
-        cb.Configure<ClusterOptions>(fun (options:ClusterOptions) -> options.ClusterId <- config.clusterId) |> ignore
-        cb.UseStaticClustering(fun (options:StaticGatewayListProviderOptions) -> options.Gateways.Add(IPEndPoint(config.localhostSiloAddress, config.localhostSiloPort).ToGatewayUri())) |> ignore
-
-        // register assembly containing your custom actor grain interfaces
+        let cb = ClientBuilder()
+        cb.Configure<ClusterOptions>(fun (options:ClusterOptions) -> options.ClusterId <- config.clusterId; options.ServiceId <- config.serviceId) |> ignore
+        cb.UseStaticClustering(fun (options:StaticGatewayListProviderOptions) -> options.Gateways.Add(IPEndPoint(config.siloAddress, config.siloGatewayPort).ToGatewayUri())) |> ignore
         cb.ConfigureApplicationParts(fun x -> x.AddApplicationPart(Assembly.GetExecutingAssembly()).WithCodeGeneration() |> ignore) |> ignore
-
-        // register Orleankka extension
         cb.UseOrleankka() |> ignore
 
-        let host = sb.Build()
-        do! host.StartAsync()
+        (sb, cb)
 
-        let client = cb.Build()
+    let start (hostBuilder: SiloHostBuilder) (clientBuilder: ClientBuilder) = task {
+        let host = hostBuilder.Build()
+        do! host.StartAsync()
+        let client = clientBuilder.Build()
         do! client.Connect()
 
         let actorSystem = client.ActorSystem()
         return { actorSystem = actorSystem }
     }
 
-    let crawl (crawlerSystem: CrawlerSystem) (job: Job) =
-         ignore job
-
+    let crawl (crawlerSystem: CrawlerSystem) (job: Job) = task {
+        let coordinatorId = sprintf "coordinator.%s" job.uri.Host
+        let coordinator = ActorSystem.typedActorOf<ICoordinator, Message>(crawlerSystem.actorSystem, coordinatorId)
+        do! coordinator <! CreateJob job
+    }

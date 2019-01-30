@@ -15,10 +15,10 @@ module Downloader =
     open Mono.Unix.Native
 
     type Platform =
-         | Linux
-         | OSX
-         | Windows32
-         | Windows64
+        | Linux
+        | OSX
+        | Windows32
+        | Windows64
 
     let platform =
         if RuntimeInformation.IsOSPlatform(OSPlatform.Linux) then
@@ -161,7 +161,7 @@ module DevToolsProtocol =
         match versionInfoResult with
         | Ok versionInfo ->
             printfn "%s" versionInfo.webSocketDebuggerUrl
-            let uri = new Uri(versionInfo.webSocketDebuggerUrl)
+            let uri = Uri(versionInfo.webSocketDebuggerUrl)
             let webSock = new ClientWebSocket()
             webSock.Options.KeepAliveInterval <- TimeSpan.Zero
 
@@ -188,7 +188,7 @@ module DevToolsProtocol =
             |> List.append [userDataDirArg; debugPortArg]
             |> String.concat " "
 
-        let startInfo = new ProcessStartInfo()
+        let startInfo = ProcessStartInfo()
         startInfo.FileName <- option.execPath
         startInfo.Arguments <- arguments
         startInfo.UseShellExecute <- false

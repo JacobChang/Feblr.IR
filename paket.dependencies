@@ -4,6 +4,7 @@ version 5.193.0
 group Build
     storage none
     source https://api.nuget.org/v3/index.json
+    nuget FSharp.Core
     nuget Fake.DotNet.Cli
     nuget Fake.IO.FileSystem
     nuget Fake.Core.Target
@@ -16,6 +17,7 @@ group Main
     nuget Orleankka.Runtime
     nuget Orleankka.Fsharp
     nuget Orleankka.Fsharp.Runtime
+    nuget TaskBuilder.fs
     nuget Giraffe
     nuget Http.fs
     nuget Thoth.Json.Net

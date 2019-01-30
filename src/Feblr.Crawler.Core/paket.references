@@ -1,7 +1,0 @@
-group Main
-    FSharp.Core
-    Giraffe
-    Orleankka
-    Orleankka.Runtime
-    Orleankka.Fsharp
-    Orleankka.Fsharp.Runtime

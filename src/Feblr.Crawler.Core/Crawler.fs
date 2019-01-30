@@ -5,7 +5,7 @@ open FSharp.Control.Tasks
 open Orleankka
 open Orleankka.FSharp
 
-module Downloader =
+module Crawler =
     type CrawlTask =
         { uri: Uri
           depth: int }
@@ -13,12 +13,12 @@ module Downloader =
     type Message =
         | StartCrawl of CrawlTask
 
-    type IDownloader =
+    type ICrawler =
         inherit IActorGrain<Message>
 
-    type Downloader() =
+    type Crawler() =
         inherit ActorGrain()
-        interface IDownloader
+        interface ICrawler
 
         override this.Receive(message) = task {
             match message with
