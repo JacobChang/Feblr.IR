@@ -5,16 +5,11 @@ open FSharp.Control.Tasks
 open Orleankka
 open Orleankka.FSharp
 
+open Message
+
 module Extractor =
-    type CrawlTask =
-        { uri: Uri
-          depth: int }
-
-    type Message =
-        | StartCrawl of CrawlTask
-
     type IExtractor =
-        inherit IActorGrain<Message>
+        inherit IActorGrain<ExtractorMessage>
 
     type Extractor() =
         inherit ActorGrain()
@@ -22,11 +17,19 @@ module Extractor =
 
         override this.Receive(message) = task {
             match message with
-            | :? Message as msg ->
+            | :? ExtractorMessage as msg ->
                 match msg with
-                | StartCrawl task ->
-                    printfn "%A" task
+                | StartExtract extractTask ->
+                    printfn "%A %s" extractTask.uri extractTask.content
+                    return none()
+                | CancelExtract crawler ->
                     return none()
             | _ ->
                 return unhandled()
+        }
+
+        static member start (actorSystem: IActorSystem) (extractTask: ExtractTask) = task {
+            let extractorId = sprintf "extractor.%s" extractTask.uri.Host
+            let extractor = ActorSystem.typedActorOf<IExtractor, ExtractorMessage>(actorSystem, extractorId)
+            do! extractor <! StartExtract extractTask
         }

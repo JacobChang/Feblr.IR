@@ -14,7 +14,8 @@ open Orleankka.Cluster
 open Orleankka.Client
 open Orleankka.FSharp
 
-open Feblr.Crawler.Core.Coordinator
+open Message
+open Coordinator
 
 module Engine =
     type Config =
@@ -53,8 +54,8 @@ module Engine =
         return { actorSystem = actorSystem }
     }
 
-    let crawl (crawlerSystem: CrawlerSystem) (job: Job) = task {
-        let coordinatorId = sprintf "coordinator.%s" job.uri.Host
-        let coordinator = ActorSystem.typedActorOf<ICoordinator, Message>(crawlerSystem.actorSystem, coordinatorId)
+    let crawl (crawlerSystem: CrawlerSystem) (job: CrawlJob) = task {
+        let coordinatorId = sprintf "coordinator.%s" job.domain.Host
+        let coordinator = ActorSystem.typedActorOf<ICoordinator, CoordinatorMessage>(crawlerSystem.actorSystem, coordinatorId)
         do! coordinator <! CreateJob job
     }

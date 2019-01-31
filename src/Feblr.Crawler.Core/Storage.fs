@@ -1,25 +1,23 @@
 namespace Feblr.Crawler.Core
 
 open System
-open System.Threading.Tasks
 open FSharp.Control.Tasks
 open Orleankka
 open Orleankka.FSharp
 
 open Message
-open Downloader
-open Extractor
+open System.Threading.Tasks
 
-module Crawler =
-    type ICrawler =
+module Storage =
+    type IStorage =
         inherit IActorGrain<CrawlerMessage>
 
-    type Crawler() =
+    type Storage() =
         inherit ActorGrain()
 
         let mutable currTask: CrawlTask option = None
 
-        interface ICrawler
+        interface IStorage
 
         override this.Receive(message) = task {
             match message with
@@ -27,8 +25,7 @@ module Crawler =
                 match msg with
                 | StartCrawl crawlTask ->
                     currTask <- Some crawlTask
-                    let crawler = ActorRef<CrawlerMessage>(this.Self)
-                    do! this.download { uri = crawlTask.uri; crawler = crawler }
+                    do! this.download crawlTask
                     return none()
                 | CancelCrawl coordinator ->
                     match currTask with
@@ -38,20 +35,24 @@ module Crawler =
                     return none()
                 | DownloadFinished (uri, content) ->
                     return none()
+                | DownloadFailed uri ->
+                    return none()
+                | DownloadCancelled uri ->
+                    return none()
+                | ExtractFinished (uri, links) ->
+                    return none()
+                | ExtractFailed uri ->
+                    return none()
+                | ExtractCancelled uri ->
+                    return none()
             | _ ->
                 return unhandled()
         }
 
-        member this.download (downloadTask: DownloadTask): Task<unit> = task {
-            do! Downloader.start this.System  downloadTask
+        member this.download (crawlTask: CrawlTask): Task<unit> = task {
+            do! Async.Sleep 1000
         }
 
-        member this.extract (extractTask: ExtractTask) (content: string): Task<unit> = task {
-            do! Extractor.start this.System  extractTask
-        }
-
-        static member start (actorSystem: IActorSystem) (crawlTask: CrawlTask) = task {
-            let crawlerId = sprintf "crawler.%s" crawlTask.uri.Host
-            let crawler = ActorSystem.typedActorOf<ICrawler, CrawlerMessage>(actorSystem, crawlerId)
-            do! crawler <! StartCrawl crawlTask
+        member this.extract (crawlTask: CrawlTask): Task<unit> = task {
+            do! Async.Sleep 1000
         }

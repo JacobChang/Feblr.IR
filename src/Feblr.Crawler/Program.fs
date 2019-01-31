@@ -5,6 +5,7 @@ open System
 open System.Net
 open System.Threading.Tasks
 open FSharp.Control.Tasks
+
 open Feblr.Crawler.Core
 
 module Main =
@@ -24,10 +25,7 @@ module Main =
             let! engine = Engine.start hostBuilder clientBuilder
             let uri = Uri("https://example.com")
             let depth = 1
-            do! Engine.crawl engine { uri = uri; depth = depth }
-            let uri = Uri("https://example2.com")
-            let depth = 1
-            do! Engine.crawl engine { uri = uri; depth = depth }
+            do! Engine.crawl engine { domain = uri; depth = depth }
         }
         task.Wait()
 

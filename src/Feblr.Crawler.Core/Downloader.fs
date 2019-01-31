@@ -5,16 +5,11 @@ open FSharp.Control.Tasks
 open Orleankka
 open Orleankka.FSharp
 
+open Message
+
 module Downloader =
-    type CrawlTask =
-        { uri: Uri
-          depth: int }
-
-    type Message =
-        | StartCrawl of CrawlTask
-
     type IDownloader =
-        inherit IActorGrain<Message>
+        inherit IActorGrain<DownloaderMessage>
 
     type Downloader() =
         inherit ActorGrain()
@@ -22,11 +17,19 @@ module Downloader =
 
         override this.Receive(message) = task {
             match message with
-            | :? Message as msg ->
+            | :? DownloaderMessage as msg ->
                 match msg with
-                | StartCrawl task ->
-                    printfn "%A" task
+                | StartDownload downloadTask ->
+                    printfn "%A" downloadTask.uri
+                    return none()
+                | CancelDownload crawler ->
                     return none()
             | _ ->
                 return unhandled()
+        }
+
+        static member start (actorSystem: IActorSystem) (downloadTask: DownloadTask) = task {
+            let downloaderId = sprintf "downloader.%s" downloadTask.uri.Host
+            let downloader = ActorSystem.typedActorOf<IDownloader, DownloaderMessage>(actorSystem, downloaderId)
+            do! downloader <! StartDownload downloadTask
         }
