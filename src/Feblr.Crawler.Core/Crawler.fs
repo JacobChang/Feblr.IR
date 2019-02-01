@@ -28,30 +28,52 @@ module Crawler =
                 | StartCrawl crawlTask ->
                     currTask <- Some crawlTask
                     let crawler = ActorRef<CrawlerMessage>(this.Self)
-                    do! this.download { uri = crawlTask.uri; crawler = crawler }
+                    do! this.startDownloader { crawlTask = crawlTask; crawler = crawler }
                     return none()
-                | CancelCrawl coordinator ->
+                | StopCrawl crawlTask ->
                     match currTask with
-                    | Some crawlTask ->
-                        do! coordinator <! TaskCancelled crawlTask
+                    | Some currTask ->
+                        if currTask.uri = crawlTask.uri then
+                            do! crawlTask.coordinator <! TaskStopped crawlTask
                     | None -> ()
                     return none()
-                | DownloadFinished (uri, content) ->
+                | DownloadFinished (crawlTask, content) ->
+                    let crawler = ActorRef<CrawlerMessage>(this.Self)
+                    do! this.startExtractor { crawlTask = crawlTask; content = content; crawler = crawler }
                     return none()
+                | ExtractFinished (crawlTask, content, links) ->
+                    do! crawlTask.coordinator <! TaskFinished (crawlTask, content, links)
+                    return none()
+                | _ ->
+                    return unhandled()
             | _ ->
                 return unhandled()
         }
 
-        member this.download (downloadTask: DownloadTask): Task<unit> = task {
+        member this.startDownloader (downloadTask: DownloadTask): Task<unit> = task {
             do! Downloader.start this.System  downloadTask
         }
 
-        member this.extract (extractTask: ExtractTask) (content: string): Task<unit> = task {
+        member this.stopDownloader (downloadTask: DownloadTask): Task<unit> = task {
+            do! Downloader.stop this.System  downloadTask
+        }
+
+        member this.startExtractor (extractTask: ExtractTask): Task<unit> = task {
             do! Extractor.start this.System  extractTask
+        }
+
+        member this.stopExtractor (extractTask: ExtractTask): Task<unit> = task {
+            do! Extractor.stop this.System  extractTask
         }
 
         static member start (actorSystem: IActorSystem) (crawlTask: CrawlTask) = task {
             let crawlerId = sprintf "crawler.%s" crawlTask.uri.Host
             let crawler = ActorSystem.typedActorOf<ICrawler, CrawlerMessage>(actorSystem, crawlerId)
             do! crawler <! StartCrawl crawlTask
+        }
+
+        static member stop (actorSystem) (crawlTask: CrawlTask) = task {
+            let crawlerId = sprintf "crawler.%s" crawlTask.uri.Host
+            let crawler = ActorSystem.typedActorOf<ICrawler, CrawlerMessage>(actorSystem, crawlerId)
+            do! crawler <! StopCrawl crawlTask
         }

@@ -15,7 +15,7 @@ open Orleankka.Client
 open Orleankka.FSharp
 
 open Message
-open Coordinator
+open Commander
 
 module Engine =
     type Config =
@@ -25,7 +25,7 @@ module Engine =
           siloGatewayPort: int
           siloAddress: IPAddress }
 
-    type CrawlerSystem =
+    type Engine =
         { actorSystem: IClientActorSystem }
 
     let setup (config: Config) =
@@ -54,8 +54,6 @@ module Engine =
         return { actorSystem = actorSystem }
     }
 
-    let crawl (crawlerSystem: CrawlerSystem) (job: CrawlJob) = task {
-        let coordinatorId = sprintf "coordinator.%s" job.domain.Host
-        let coordinator = ActorSystem.typedActorOf<ICoordinator, CoordinatorMessage>(crawlerSystem.actorSystem, coordinatorId)
-        do! coordinator <! CreateJob job
+    let crawl (engine: Engine) (job: CrawlJob) = task {
+        do! Commander.dispatch (engine.actorSystem) job
     }

@@ -13,36 +13,41 @@ module rec Message =
           depth: int
           coordinator: ActorRef<CoordinatorMessage> }
 
+    type CommanderMessage =
+        | DispatchJob of CrawlJob
+
     type CoordinatorMessage =
-        | CreateJob of CrawlJob
-        | CancelJob of CrawlJob
-        | TaskFinished of CrawlTask * Uri list
+        | StartJob of CrawlJob
+        | StopJob of CrawlJob
+        | TaskFinished of CrawlTask * string * Uri list
         | TaskFailed of CrawlTask
-        | TaskCancelled of CrawlTask
+        | TaskStopped of CrawlTask
 
     type CrawlerMessage =
         | StartCrawl of CrawlTask
-        | CancelCrawl of ActorRef<CoordinatorMessage>
-        | DownloadFinished of Uri * string
-        | DownloadFailed of Uri
-        | DownloadCancelled of Uri
-        | ExtractFinished of Uri * Uri list
-        | ExtractFailed of Uri
-        | ExtractCancelled of Uri
+        | StopCrawl of CrawlTask
+        | DownloadFinished of CrawlTask * string
+        | DownloadFailed of CrawlTask
+        | DownloadStopped of CrawlTask
+        | ExtractFinished of CrawlTask * string * Uri list
+        | ExtractFailed of CrawlTask * string
+        | ExtractStopped of CrawlTask
 
     type DownloadTask =
-        { uri: Uri
+        { crawlTask: CrawlTask
           crawler: ActorRef<CrawlerMessage> }
 
     type DownloaderMessage =
         | StartDownload of DownloadTask
-        | CancelDownload of ActorRef<CrawlerMessage>
+        | StopDownload of DownloadTask
 
     type ExtractTask =
-        { uri: Uri
+        { crawlTask: CrawlTask
           content: string
           crawler: ActorRef<CrawlerMessage> }
 
     type ExtractorMessage =
         | StartExtract of ExtractTask
-        | CancelExtract of ActorRef<CrawlerMessage>
+        | StopExtract of ExtractTask
+
+    type StorageMessage = string

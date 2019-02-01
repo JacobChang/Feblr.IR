@@ -29,4 +29,6 @@ module Main =
         }
         task.Wait()
 
+        let info = Console.ReadKey false
+
         0 // return an integer exit code

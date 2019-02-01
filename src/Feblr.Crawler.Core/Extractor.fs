@@ -20,16 +20,22 @@ module Extractor =
             | :? ExtractorMessage as msg ->
                 match msg with
                 | StartExtract extractTask ->
-                    printfn "%A %s" extractTask.uri extractTask.content
+                    extractTask.crawler <! ExtractFinished (extractTask.crawlTask, "", []) |> ignore
                     return none()
-                | CancelExtract crawler ->
+                | StopExtract crawler ->
                     return none()
             | _ ->
                 return unhandled()
         }
 
         static member start (actorSystem: IActorSystem) (extractTask: ExtractTask) = task {
-            let extractorId = sprintf "extractor.%s" extractTask.uri.Host
+            let extractorId = sprintf "extractor.%s" extractTask.crawlTask.uri.Host
             let extractor = ActorSystem.typedActorOf<IExtractor, ExtractorMessage>(actorSystem, extractorId)
             do! extractor <! StartExtract extractTask
+        }
+
+        static member stop (actorSystem: IActorSystem) (extractTask: ExtractTask) = task {
+            let extractorId = sprintf "extractor.%s" extractTask.crawlTask.uri.Host
+            let extractor = ActorSystem.typedActorOf<IExtractor, ExtractorMessage>(actorSystem, extractorId)
+            do! extractor <! StopExtract extractTask
         }

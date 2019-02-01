@@ -10,7 +10,7 @@ open System.Threading.Tasks
 
 module Storage =
     type IStorage =
-        inherit IActorGrain<CrawlerMessage>
+        inherit IActorGrain<StorageMessage>
 
     type Storage() =
         inherit ActorGrain()
@@ -21,38 +21,11 @@ module Storage =
 
         override this.Receive(message) = task {
             match message with
-            | :? CrawlerMessage as msg ->
+            | :? StorageMessage as msg ->
                 match msg with
-                | StartCrawl crawlTask ->
-                    currTask <- Some crawlTask
-                    do! this.download crawlTask
-                    return none()
-                | CancelCrawl coordinator ->
-                    match currTask with
-                    | Some crawlTask ->
-                        do! coordinator <! TaskCancelled crawlTask
-                    | None -> ()
-                    return none()
-                | DownloadFinished (uri, content) ->
-                    return none()
-                | DownloadFailed uri ->
-                    return none()
-                | DownloadCancelled uri ->
-                    return none()
-                | ExtractFinished (uri, links) ->
-                    return none()
-                | ExtractFailed uri ->
-                    return none()
-                | ExtractCancelled uri ->
-                    return none()
+                | _ ->
+                    return unhandled()
             | _ ->
                 return unhandled()
         }
-
-        member this.download (crawlTask: CrawlTask): Task<unit> = task {
-            do! Async.Sleep 1000
-        }
-
-        member this.extract (crawlTask: CrawlTask): Task<unit> = task {
-            do! Async.Sleep 1000
-        }
+        

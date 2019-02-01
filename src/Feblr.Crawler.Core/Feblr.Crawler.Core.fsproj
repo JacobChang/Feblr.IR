@@ -9,6 +9,7 @@
     <Compile Include="Storage.fs" />
     <Compile Include="Crawler.fs" />
     <Compile Include="Coordinator.fs" />
+    <Compile Include="Commander.fs" />
     <Compile Include="Library.fs" />
   </ItemGroup>
   <ItemGroup>
