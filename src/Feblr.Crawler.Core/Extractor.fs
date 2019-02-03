@@ -4,6 +4,7 @@ open System
 open FSharp.Control.Tasks
 open Orleankka
 open Orleankka.FSharp
+open HtmlAgilityPack
 
 open Message
 
@@ -20,12 +21,30 @@ module Extractor =
             | :? ExtractorMessage as msg ->
                 match msg with
                 | StartExtract extractTask ->
-                    extractTask.crawler <! ExtractFinished (extractTask.crawlTask, "", []) |> ignore
+                    this.extract extractTask |> ignore
                     return none()
                 | StopExtract crawler ->
                     return none()
             | _ ->
                 return unhandled()
+        }
+
+        member this.extract (extractTask: ExtractTask) = task {
+            let doc = HtmlDocument()
+            doc.LoadHtml(extractTask.content)
+            let linkNodes = query {
+                for node in doc.DocumentNode.Descendants("a") do
+                    select node
+            }
+            let extractLink (linkNode: HtmlNode) =
+                let href = linkNode.Attributes.["href"].Value
+                Uri(extractTask.crawlTask.uri, href)
+
+            let links =
+                linkNodes
+                |> Seq.map extractLink
+                |> Seq.toList
+            extractTask.crawler <! ExtractFinished (extractTask.crawlTask, extractTask.content, links) |> ignore
         }
 
         static member start (actorSystem: IActorSystem) (extractTask: ExtractTask) = task {
