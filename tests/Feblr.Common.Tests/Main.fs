@@ -1,6 +1,6 @@
-﻿module Feblr.PowerPack.Tests
+﻿module Feblr.Common.Tests
 open Expecto
-open Feblr.PowerPack
+open Feblr.Common
 
 [<EntryPoint>]
 let main argv =

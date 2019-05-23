@@ -1,4 +1,4 @@
-namespace Feblr.PowerPack
+namespace Feblr.Common
 
 open System.Collections
 
