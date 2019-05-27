@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Message.fs" />
+    <Compile Include="Strategy.fs" />
     <Compile Include="Extractor.fs" />
     <Compile Include="Downloader.fs" />
     <Compile Include="Storage.fs" />

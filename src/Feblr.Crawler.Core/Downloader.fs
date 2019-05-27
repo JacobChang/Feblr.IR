@@ -23,7 +23,7 @@ module Downloader =
             | :? DownloaderMessage as msg ->
                 match msg with
                 | StartDownload downloadTask ->
-                    this.download downloadTask |> ignore
+                    do! this.download downloadTask
                     return none()
                 | StopDownload crawler ->
                     return none()
@@ -37,8 +37,7 @@ module Downloader =
                 Request.createUrl Get uri
                 |> Request.responseAsString
                 |> run
-            downloadTask.crawler <! DownloadFinished (downloadTask.crawlTask, bodyStr) |> ignore
-            return ()
+            return bodyStr
         }
 
         static member start (actorSystem: IActorSystem) (downloadTask: DownloadTask) = task {

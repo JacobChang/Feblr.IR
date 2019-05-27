@@ -1,7 +1,6 @@
 namespace Feblr.Crawler.Core
 
 open System
-open System.Threading.Tasks
 open FSharp.Control.Tasks
 open Orleankka
 open Orleankka.FSharp
@@ -23,15 +22,14 @@ module Commander =
             | :? Message.CommanderMessage as msg ->
                 match msg with
                 | DispatchJob job ->
-                    let coordinatorId = sprintf "coordinator.%s" job.domain.Host
-                    let coordinator = ActorSystem.typedActorOf<ICoordinator, CoordinatorMessage>(this.System, coordinatorId)
-                    do! coordinator <! StartJob job
+                    do! Coordinator.start this.System job
                     return none()
             | _ ->
                 return unhandled()
         }
 
-        static member dispatch (actorSystem: IActorSystem) (job: CrawlJob) = task {
+        static member dispatch (actorSystem: IActorSystem) (domain: Uri) (strategy: Strategy) = task {
             let commander = ActorSystem.typedActorOf<ICommander, CommanderMessage>(actorSystem, "commander")
-            do! commander <! DispatchJob job
+            let crawlJob = { domain = domain; strategy = strategy; commander = commander }
+            do! commander <! DispatchJob crawlJob
         }

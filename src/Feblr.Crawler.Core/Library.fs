@@ -16,6 +16,7 @@ open Orleankka.FSharp
 
 open Message
 open Commander
+open Strategy
 
 module Engine =
     type Config =
@@ -54,6 +55,6 @@ module Engine =
         return { actorSystem = actorSystem }
     }
 
-    let crawl (engine: Engine) (job: CrawlJob) = task {
-        do! Commander.dispatch (engine.actorSystem) job
+    let crawl (engine: Engine) (domain: Uri) (stragety: Strategy) = task {
+        do! Commander.dispatch (engine.actorSystem) domain stragety
     }

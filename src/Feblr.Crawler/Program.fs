@@ -7,6 +7,7 @@ open System.Threading.Tasks
 open FSharp.Control.Tasks
 
 open Feblr.Crawler.Core
+open Feblr.Crawler.Core.Message
 
 module Main =
     [<EntryPoint>]
@@ -19,13 +20,13 @@ module Main =
             siloAddress = IPAddress.Loopback
         }
 
-        let hostBuilder, clientBuilder = Engine.setup config
+        let (hostBuilder, clientBuilder) = Engine.setup config
 
         let task: Task<unit> = task {
+            let strategy = { depth = 10; concurrency = 1 }
             let! engine = Engine.start hostBuilder clientBuilder
             let uri = Uri("https://example.com")
-            let depth = 1
-            do! Engine.crawl engine { domain = uri; depth = depth }
+            do! Engine.crawl engine uri (BasicStrategy strategy)
         }
         task.Wait()
 
