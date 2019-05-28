@@ -1,35 +1,41 @@
 namespace Feblr.Common
 
 open System.Collections
+open MurmurHash3
 
 module BloomFilter =
     type BloomFilter =
         { bits: BitArray
-          hashFuncCount: int
-          capacity: int
+          hashFuncCount: int32
+          capacity: int32
           falsePositiveRate: float }
 
-        member this.Add () =
-            ignore ()
+        member this.add (data: string) =
+            for i in 1 .. this.hashFuncCount + 1 do
+                let hash = MurmurHash3.hash data (i |> uint32)
+                let index = hash % (this.bits.Length |> uint32)
+                this.bits.Set(index |> int, true)
 
-        member this.Check () =
-            ignore ()
+        member this.has (data: string) =
+            let mutable found = true
+            for i in 1 .. this.hashFuncCount + 1 do
+                let hash = MurmurHash3.hash data (i |> uint32)
+                let index = hash % (this.bits.Length |> uint32)
+                let flag = this.bits.Get(index |> int)
+                found <- found && flag
 
-    let internal computeM (expectedCount: int) (falsePositiveRate: double) =
-        let numerator = (double expectedCount) * (log (falsePositiveRate))
-        let denominator = double (log 1.0) / (pown (log 2.0) 2)
-        ceil(numerator / denominator) |> int
+            found
 
-    let internal computeK (expectedCount: int) (falsePositiveProbability: double) =
-        let m = computeM expectedCount falsePositiveProbability |> double
- 
-        let temp = (log 2.0) * m / (double expectedCount)
-        round temp |> int
+    let internal computeM (n: int) (p: double) =
+        -(double n) * (log p) / (pown (log 2.0) 2)
+
+    let internal computeK (m: double) (n: int) (p: double) =
+        m / (double n) * (log 2.0) |> round |> int
  
     let create (capacity: int) (falsePositiveRate: float) : BloomFilter =
-        let m = max 1 (computeM capacity falsePositiveRate)
-        let k = max 1 (computeK capacity falsePositiveRate)
-        let bits = BitArray m
+        let m = max 1.0 (computeM capacity falsePositiveRate)
+        let k = max 1 (computeK m capacity falsePositiveRate)
+        let bits = BitArray (m |> ceil |> int)
 
         { bits = bits
           hashFuncCount = k

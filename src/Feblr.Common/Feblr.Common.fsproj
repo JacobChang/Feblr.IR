@@ -3,6 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MurmurHash3.fs" />
     <Compile Include="BloomFilter.fs" />
   </ItemGroup>
 </Project>
