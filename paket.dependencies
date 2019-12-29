@@ -1,5 +1,3 @@
-version 5.206.0
-
 // [ FAKE GROUP ]
 group Build
     storage none
@@ -13,18 +11,20 @@ group Main
     storage none
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core
-    nuget Orleankka
-    nuget Orleankka.Runtime
-    nuget Orleankka.Fsharp
-    nuget Orleankka.Fsharp.Runtime
+    nuget Microsoft.Extensions.Logging
+    nuget Microsoft.Orleans.Server
+    nuget Microsoft.Orleans.OrleansCodeGenerator
+    nuget Microsoft.Orleans.Core.Abstractions
+    nuget Microsoft.Orleans.Client
     nuget TaskBuilder.fs
     nuget Giraffe
-    nuget Http.fs
     nuget Thoth.Json.Net
+    nuget Thoth.Json.Giraffe
+    nuget Http.fs
     nuget Mono.Posix.NetStandard
 
 group Tests
     storage none
     source https://api.nuget.org/v3/index.json
     nuget FSharp.Core
-    nuget Orleankka.TestKit
+    nuget Microsoft.Orleans.TestingHost

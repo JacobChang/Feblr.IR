@@ -5,27 +5,27 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{86B6A8CE-7E7C-45DD-8158-12B050636A68}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.RobotsTxt", "src\Feblr.RobotsTxt\Feblr.RobotsTxt.fsproj", "{B59D59FC-1FEF-4E82-9CDC-8CD633774714}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.RobotsTxt", "src\Feblr.IR.RobotsTxt\Feblr.IR.RobotsTxt.fsproj", "{B59D59FC-1FEF-4E82-9CDC-8CD633774714}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{EF3EBA78-2BC3-41CC-A510-9B7B175EA85C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.RobotsTxt.Tests", "tests\Feblr.RobotsTxt.Tests\Feblr.RobotsTxt.Tests.fsproj", "{CC305F8C-CAA8-4A38-B6B5-DBFC55E34F3F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.RobotsTxt.Tests", "tests\Feblr.IR.RobotsTxt.Tests\Feblr.IR.RobotsTxt.Tests.fsproj", "{CC305F8C-CAA8-4A38-B6B5-DBFC55E34F3F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Browser", "src\Feblr.Browser\Feblr.Browser.fsproj", "{D890CC7C-B06A-4AFD-BAAA-EB15E511CB5F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.Browser", "src\Feblr.IR.Browser\Feblr.IR.Browser.fsproj", "{D890CC7C-B06A-4AFD-BAAA-EB15E511CB5F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Browser.Tests", "tests\Feblr.Browser.Tests\Feblr.Browser.Tests.fsproj", "{59FF2083-9797-4329-A3B9-5A902CC9BAA9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.Browser.Tests", "tests\Feblr.IR.Browser.Tests\Feblr.IR.Browser.Tests.fsproj", "{59FF2083-9797-4329-A3B9-5A902CC9BAA9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Crawler.Core", "src\Feblr.Crawler.Core\Feblr.Crawler.Core.fsproj", "{120C7647-5960-4C1C-A7DF-8B1D6F437A8C}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.Crawler.Core", "src\Feblr.IR.Crawler.Core\Feblr.IR.Crawler.Core.fsproj", "{120C7647-5960-4C1C-A7DF-8B1D6F437A8C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Crawler.Core.Tests", "tests\Feblr.Crawler.Core.Tests\Feblr.Crawler.Core.Tests.fsproj", "{D26AFEF4-2D71-487D-BFBF-5A60A8D0A417}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.Crawler.Core.Tests", "tests\Feblr.IR.Crawler.Core.Tests\Feblr.IR.Crawler.Core.Tests.fsproj", "{D26AFEF4-2D71-487D-BFBF-5A60A8D0A417}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Crawler", "src\Feblr.Crawler\Feblr.Crawler.fsproj", "{C044A47C-AD19-441D-9BCC-66A2B673A77E}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.Crawler", "src\Feblr.IR.Crawler\Feblr.IR.Crawler.fsproj", "{C044A47C-AD19-441D-9BCC-66A2B673A77E}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.Crawler.Tests", "tests\Feblr.Crawler.Tests\Feblr.Crawler.Tests.fsproj", "{091976B9-80F3-4B4F-B13A-CAF1DE22C228}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.Crawler.Tests", "tests\Feblr.IR.Crawler.Tests\Feblr.IR.Crawler.Tests.fsproj", "{091976B9-80F3-4B4F-B13A-CAF1DE22C228}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.SearchEngine.Core", "src\Feblr.SearchEngine.Core\Feblr.SearchEngine.Core.fsproj", "{15C77E83-0C4B-4645-8016-B4DD97250F20}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.SearchEngine.Core", "src\Feblr.IR.SearchEngine.Core\Feblr.IR.SearchEngine.Core.fsproj", "{15C77E83-0C4B-4645-8016-B4DD97250F20}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.SearchEngine", "src\Feblr.SearchEngine\Feblr.SearchEngine.fsproj", "{2C5FC8CE-0866-4859-988C-6C355F872EFA}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Feblr.IR.SearchEngine", "src\Feblr.IR.SearchEngine\Feblr.IR.SearchEngine.fsproj", "{2C5FC8CE-0866-4859-988C-6C355F872EFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
